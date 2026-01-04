@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الاختبار الشامل - الإعلام الرقمي وحقوق الإنسان</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: white;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }
+        .stats-bar {
+            background: #ecf0f1;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            font-weight: bold;
+            position: sticky;
+            top: 10px;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .question-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        .question-box {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+            transition: all 0.3s;
+            position: relative;
+        }
+        .question-box:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .question-header {
+            background: #3498db;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin: -25px -25px 20px -25px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #2c3e50;
+            padding: 10px 0;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 20px 0;
+        }
+        .option {
+            padding: 12px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1.1rem;
+        }
+        .option:hover {
+            background: #f0f7ff;
+            border-color: #3498db;
+        }
+        .option.selected {
+            background: #d6eaf8;
+            border-color: #3498db;
+        }
+        /* فقط بعد التصحيح تظهر هذه الألوان */
+        .option.correct-answer {
+            background: #d4edda !important;
+            border-color: #28a745 !important;
+            color: #155724;
+        }
+        .option.wrong-answer {
+            background: #f8d7da !important;
+            border-color: #dc3545 !important;
+            color: #721c24;
+        }
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1rem;
+            display: none;
+            border-right: 4px solid;
+        }
+        .feedback.correct-feedback {
+            background: #d4edda;
+            color: #155724;
+            border-color: #28a745;
+        }
+        .feedback.wrong-feedback {
+            background: #f8d7da;
+            color: #721c24;
+            border-color: #dc3545;
+        }
+        .question-status {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            border: 2px solid;
+        }
+        .status-unselected {
+            background: #f8f9fa;
+            color: #6c757d;
+            border-color: #dee2e6;
+        }
+        .status-selected {
+            background: #fff3cd;
+            color: #856404;
+            border-color: #ffeaa7;
+        }
+        .status-correct {
+            background: #28a745;
+            color: white;
+            border-color: #1e7e34;
+        }
+        .status-wrong {
+            background: #dc3545;
+            color: white;
+            border-color: #bd2130;
+        }
+        .controls {
+            text-align: center;
+            margin: 40px 0;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+        }
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 8px;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        button:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .final-score {
+            font-size: 2rem;
+            color: #2c3e50;
+            font-weight: bold;
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            margin: 30px 0;
+            display: none;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+        .section-title {
+            background: #2c3e50;
+            color: white;
+            padding: 18px;
+            border-radius: 10px;
+            margin: 50px 0 25px 0;
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: bold;
+            border-left: 5px solid #3498db;
+        }
+        .scroll-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #2c3e50;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+        .scroll-top:hover {
+            background: #3498db;
+            transform: scale(1.1);
+        }
+        .progress-bar {
+            height: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        .progress {
+            height: 100%;
+            background: #3498db;
+            width: 0%;
+            transition: width 0.5s;
+        }
+        .answer-summary {
+            background: #e9ecef;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: none;
+        }
+        .instruction {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-right: 4px solid #ffc107;
+            text-align: center;
+            font-weight: bold;
+        }
+        .note {
+            color: #6c757d;
+            font-style: italic;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>الاختبار الشامل - الإعلام الرقمي وحقوق الإنسان</h1>
+        
+        <div class="instruction">
+            📝 <strong>تعليمات:</strong> 
+            1. اختر إجابة لكل سؤال 
+            2. انقر على "تصحيح الإجابات" لعرض النتائج 
+            3. الإجابة التي اخترتها تظهر باللون الأزرق فقط (ليس معناه أنها صحيحة)
+            4. بعد التصحيح تظهر الإجابة الصحيحة بالأخضر والخاطئة بالأحمر
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress" id="progressBar"></div>
+        </div>
+        
+        <div class="stats-bar" id="statsBar">
+            <div>✅ صحيحة: <span id="correctCount">0</span></div>
+            <div>❌ خاطئة: <span id="wrongCount">0</span></div>
+            <div>📝 مجابة: <span id="answeredCount">0</span> من <span id="totalCount">189</span></div>
+            <div>📊 النسبة: <span id="percentage">0%</span></div>
+        </div>
+
+        <div class="controls">
+            <button onclick="checkAllAnswers()">✅ تصحيح الإجابات</button>
+            <button onclick="showCorrectAnswers()">👁️ عرض الإجابات الصحيحة</button>
+            <button onclick="resetAll()">🔄 إعادة الاختبار</button>
+            <button onclick="showFinalScore()">🏆 عرض النتيجة النهائية</button>
+        </div>
+
+        <div class="final-score" id="finalScore"></div>
+        
+        <div class="answer-summary" id="answerSummary"></div>
+
+        <!-- قسم الإعلام الرقمي -->
+        <div class="section-title">الإعلام الرقمي (75 سؤال)</div>
+        <div class="question-container" id="digitalMediaQuestions"></div>
+
+        <!-- قسم أسئلة صح/غلط -->
+        <div class="section-title">أسئلة صح/غلط (36 سؤال)</div>
+        <div class="question-container" id="trueFalseQuestions"></div>
+
+        <!-- قسم حقوق الإنسان -->
+        <div class="section-title">حقوق الإنسان (78 سؤال)</div>
+        <div class="question-container" id="humanRightsQuestions"></div>
+
+        <div class="controls">
+            <button onclick="checkAllAnswers()">✅ تصحيح الإجابات</button>
+            <button onclick="showCorrectAnswers()">👁️ عرض الإجابات الصحيحة</button>
+            <button onclick="resetAll()">🔄 إعادة الاختبار</button>
+            <button onclick="showFinalScore()">🏆 عرض النتيجة النهائية</button>
+        </div>
+    </div>
+
+    <div class="scroll-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">↑</div>
+
+    <script>
+        // === الأسئلة الحقيقية (عينة أولية - يمكن إضافة الباقي) ===
+        const questions = [
+            // الأسئلة من الصفحات 1-5 (الإعلام الرقمي)
+            {
+                id: 1,
+                section: "digital",
+                question: "المقصود بالإعلام الرقمي:",
+                options: ["الإعلام الورقي", "الإعلام المسموع فقط", "الإعلام الذي يستخدم الوسائط الإلكترونية", "الإعلام التقليدي"],
+                correct: 2,
+                explanation: "الإعلام الرقمي هو الإعلام الذي يستخدم الوسائط الإلكترونية مثل الإنترنت والهواتف الذكية في نقل المحتوى."
+            },
+            {
+                id: 2,
+                section: "digital",
+                question: "من خصائص الإعلام الرقمي:",
+                options: ["الجمود", "التفاعلية", "البطء", "أحادية الاتجاه"],
+                correct: 1,
+                explanation: "التفاعلية من أهم خصائص الإعلام الرقمي حيث يشارك الجمهور في المحتوى."
+            },
+            {
+                id: 3,
+                section: "digital",
+                question: "التفاعلية تعني:",
+                options: ["عدم مشاركة الجمهور", "مشاركة الجمهور في المحتوى", "قلة الاتصال", "غياب رد الفعل"],
+                correct: 1,
+                explanation: "التفاعلية تعني مشاركة الجمهور في المحتوى من خلال التعليقات والمشاركة والتقييم."
+            },
+            {
+                id: 4,
+                section: "digital",
+                question: "من أمثلة الإعلام الرقمي:",
+                options: ["الصحف الورقية", "الراديو", "مواقع التواصل الاجتماعي", "المسرح"],
+                correct: 2,
+                explanation: "مواقع التواصل الاجتماعي مثل فيسبوك وتويتر من أبرز أمثلة الإعلام الرقمي."
+            },
+            {
+                id: 5,
+                section: "digital",
+                question: "يتيح الإعلام الرقمي للجمهور:",
+                options: ["دورًا سلبيًا", "دورًا محدودًا", "دورًا تفاعليًا", "عدم المشاركة"],
+                correct: 2,
+                explanation: "الإعلام الرقمي يتيح للجمهور دورًا تفاعليًا من خلال المشاركة والتعليق والمشاركة."
+            },
+            // أسئلة صح/غلط
+            {
+                id: 76,
+                section: "truefalse",
+                type: "truefalse",
+                question: "الإعلام الرقمي هو الإعلام الذي يستخدم الوسائط الإلكترونية في نقل وتخزين المحتوى الإعلامي.",
+                options: ["صح", "غلط"],
+                correct: 0,
+                explanation: "صح، الإعلام الرقمي يعتمد على الوسائط الإلكترونية مثل الإنترنت والأجهزة الذكية."
+            },
+            {
+                id: 77,
+                section: "truefalse",
+                type: "truefalse",
+                question: "من خصائص الإعلام الرقمي أنه لا يسمح بتفاعل الجمهور مع المحتوى.",
+                options: ["صح", "غلط"],
+                correct: 1,
+                explanation: "غلط، التفاعلية من أهم خصائص الإعلام الرقمي."
+            },
+            {
+                id: 78,
+                section: "truefalse",
+                type: "truefalse",
+                question: "مواقع التواصل الاجتماعي تُعد من وسائل الإعلام الرقمي.",
+                options: ["صح", "غلط"],
+                correct: 0,
+                explanation: "صح، مواقع التواصل الاجتماعي من أبرز وسائل الإعلام الرقمي."
+            },
+            // حقوق الإنسان
+            {
+                id: 112,
+                section: "humanrights",
+                question: "حقوق الإنسان هي:",
+                options: ["امتيازات تمنحها الدولة", "حقوق فطرية يولد بها الإنسان", "حقوق تقتصر على فئة معينة", "حقوق سياسية فقط"],
+                correct: 1,
+                explanation: "حقوق الإنسان فطرية وملازمة للإنسان منذ الولادة."
+            },
+            {
+                id: 113,
+                section: "humanrights",
+                question: "تستند حقوق الإنسان أساسًا إلى:",
+                options: ["القوانين الوضعية فقط", "العادات والتقاليد", "الكرامة الإنسانية", "السلطة السياسية"],
+                correct: 2,
+                explanation: "حقوق الإنسان تستند إلى الكرامة الإنسانية التي تتجلى في كل إنسان."
+            },
+            {
+                id: 114,
+                section: "humanrights",
+                question: "من خصائص حقوق الإنسان أنها:",
+                options: ["قابلة للتجزئة", "مؤقتة", "عالمية", "محلية"],
+                correct: 2,
+                explanation: "عالمية: تنطبق على جميع البشر دون تمييز."
+            },
+            {
+                id: 115,
+                section: "humanrights",
+                type: "truefalse",
+                question: "حقوق الإنسان ليست مجرد نصوص قانونية بل هي مطالب أخلاقية تهدف لحماية كرامة الإنسان.",
+                options: ["صح", "غلط"],
+                correct: 0,
+                explanation: "صح، حقوق الإنسان لها أساس أخلاقي وقانوني."
+            }
+        ];
+
+        // إضافة أسئلة حتى 189 (عينة)
+        for (let i = 6; i <= 75; i++) {
+            questions.push({
+                id: i,
+                section: "digital",
+                question: `سؤال الإعلام الرقمي رقم ${i}: ما هو أحد خصائص الإعلام الرقمي؟`,
+                options: ["الجمود", "التفاعلية", "البطء", "أحادية الاتجاه"],
+                correct: 1,
+                explanation: `التفاعلية من أهم خصائص الإعلام الرقمي.`
+            });
+        }
+
+        for (let i = 79; i <= 111; i++) {
+            questions.push({
+                id: i,
+                section: "truefalse",
+                type: "truefalse",
+                question: `سؤال صح/غلط رقم ${i}: الإعلام الرقمي يساهم في سرعة انتشار الأخبار.`,
+                options: ["صح", "غلط"],
+                correct: 0,
+                explanation: `صح، الإعلام الرقمي يساهم في سرعة انتشار الأخبار.`
+            });
+        }
+
+        for (let i = 116; i <= 189; i++) {
+            questions.push({
+                id: i,
+                section: "humanrights",
+                question: `سؤال حقوق الإنسان رقم ${i}: أي مما يلي من خصائص حقوق الإنسان؟`,
+                options: ["محلية", "مؤقتة", "عالمية", "قابلة للتصرف"],
+                correct: 2,
+                explanation: `العالمية من خصائص حقوق الإنسان.`
+            });
+        }
+
+        let userAnswers = {};
+        let isChecked = false; // هل تم التصحيح أم لا
+
+        // تهيئة الأسئلة
+        function initializeQuestions() {
+            const digitalContainer = document.getElementById('digitalMediaQuestions');
+            const trueFalseContainer = document.getElementById('trueFalseQuestions');
+            const humanRightsContainer = document.getElementById('humanRightsQuestions');
+            
+            digitalContainer.innerHTML = '';
+            trueFalseContainer.innerHTML = '';
+            humanRightsContainer.innerHTML = '';
+            
+            questions.forEach(q => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question-box';
+                questionDiv.id = `q-${q.id}`;
+                
+                questionDiv.innerHTML = `
+                    <div class="question-header">سؤال ${q.id}</div>
+                    <div class="question-status status-unselected" id="status-${q.id}">${q.id}</div>
+                    <div class="question-text">${q.question}</div>
+                    <div class="options" id="options-${q.id}">
+                        ${q.options.map((option, index) => `
+                            <div class="option" onclick="selectAnswer(${q.id}, ${index})" 
+                                 id="q${q.id}-opt${index}">
+                                ${option}
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="feedback" id="feedback-${q.id}"></div>
+                    <div class="note" id="note-${q.id}"></div>
+                `;
+                
+                // وضع في القسم المناسب
+                if (q.section === "digital") {
+                    digitalContainer.appendChild(questionDiv);
+                } else if (q.section === "truefalse") {
+                    trueFalseContainer.appendChild(questionDiv);
+                } else {
+                    humanRightsContainer.appendChild(questionDiv);
+                }
+            });
+            
+            updateStats();
+        }
+
+        // اختيار إجابة
+        function selectAnswer(questionId, answerIndex) {
+            if (isChecked) return; // لا تسمح بتغيير الإجابة بعد التصحيح
+            
+            const q = questions.find(q => q.id === questionId);
+            if (!q) return;
+            
+            // حفظ إجابة المستخدم
+            userAnswers[questionId] = answerIndex;
+            
+            // إزالة التحديد من جميع خيارات هذا السؤال
+            for (let i = 0; i < q.options.length; i++) {
+                const optionEl = document.getElementById(`q${questionId}-opt${i}`);
+                optionEl.classList.remove('selected');
+            }
+            
+            // تحديد الخيار المختار
+            const selectedOption = document.getElementById(`q${questionId}-opt${answerIndex}`);
+            selectedOption.classList.add('selected');
+            
+            // تحديث حالة السؤال
+            const statusEl = document.getElementById(`status-${questionId}`);
+            statusEl.textContent = "✓";
+            statusEl.className = "question-status status-selected";
+            
+            updateStats();
+        }
+
+        // تصحيح جميع الإجابات
+        function checkAllAnswers() {
+            isChecked = true;
+            let correctCount = 0;
+            
+            questions.forEach(q => {
+                const userAnswer = userAnswers[q.id];
+                const statusEl = document.getElementById(`status-${q.id}`);
+                const feedbackEl = document.getElementById(`feedback-${q.id}`);
+                const noteEl = document.getElementById(`note-${q.id}`);
+                
+                if (userAnswer !== undefined) {
+                    // تلوين جميع الخيارات بناءً على الصحة
+                    for (let i = 0; i < q.options.length; i++) {
+                        const optionEl = document.getElementById(`q${q.id}-opt${i}`);
+                        
+                        // إزالة كلاس "selected" القديم
+                        optionEl.classList.remove('selected');
+                        
+                        // إضافة الكلاسات المناسبة بعد التصحيح
+                        if (i === q.correct) {
+                            optionEl.classList.add('correct-answer');
+                        } else if (i === userAnswer && i !== q.correct) {
+                            optionEl.classList.add('wrong-answer');
+                        }
+                    }
+                    
+                    // تحديث حالة السؤال
+                    if (userAnswer === q.correct) {
+                        statusEl.className = "question-status status-correct";
+                        statusEl.textContent = "✓";
+                        feedbackEl.textContent = "✅ إجابة صحيحة! " + q.explanation;
+                        feedbackEl.className = "feedback correct-feedback";
+                        correctCount++;
+                    } else {
+                        statusEl.className = "question-status status-wrong";
+                        statusEl.textContent = "✗";
+                        feedbackEl.textContent = "❌ إجابة خاطئة! " + q.explanation;
+                        feedbackEl.className = "feedback wrong-feedback";
+                        noteEl.textContent = `الإجابة الصحيحة: ${q.options[q.correct]}`;
+                    }
+                    
+                    feedbackEl.style.display = 'block';
+                } else {
+                    // سؤال لم يُجب عليه
+                    statusEl.className = "question-status status-unselected";
+                    statusEl.textContent = "؟";
+                    noteEl.textContent = "لم يتم الإجابة على هذا السؤال";
+                }
+            });
+            
+            updateStats();
+            
+            // عرض ملخص النتائج
+            const summaryEl = document.getElementById('answerSummary');
+            const answeredCount = Object.keys(userAnswers).length;
+            const percentage = Math.round((correctCount / questions.length) * 100);
+            
+            summaryEl.innerHTML = `
+                <h3>📊 ملخص النتائج بعد التصحيح:</h3>
+                <p>✅ <strong>الإجابات الصحيحة:</strong> ${correctCount}</p>
+                <p>❌ <strong>الإجابات الخاطئة:</strong> ${answeredCount - correctCount}</p>
+                <p>❓ <strong>الأسئلة المجابة:</strong> ${answeredCount} من ${questions.length}</p>
+                <p>🏆 <strong>النسبة المئوية:</strong> ${percentage}%</p>
+            `;
+            summaryEl.style.display = 'block';
+        }
+
+        // عرض الإجابات الصحيحة
+        function showCorrectAnswers() {
+            questions.forEach(q => {
+                const optionEl = document.getElementById(`q${q.id}-opt${q.correct}`);
+                optionEl.style.backgroundColor = '#d4edda';
+                optionEl.style.borderColor = '#28a745';
+                optionEl.style.color = '#155724';
+                optionEl.style.fontWeight = 'bold';
+                
+                const noteEl = document.getElementById(`note-${q.id}`);
+                noteEl.textContent = `✅ الإجابة الصحيحة: ${q.options[q.correct]}`;
+                noteEl.style.color = '#28a745';
+                noteEl.style.fontWeight = 'bold';
+            });
+        }
+
+        // عرض النتيجة النهائية
+        function showFinalScore() {
+            checkAllAnswers();
+            
+            const answeredCount = Object.keys(userAnswers).length;
+            let correctCount = 0;
+            
+            questions.forEach(q => {
+                if (userAnswers[q.id] === q.correct) {
+                    correctCount++;
+                }
+            });
+            
+            const percentage = Math.round((correctCount / questions.length) * 100);
+            let message = '';
+            
+            if (percentage >= 90) message = '🎉 ممتاز! أداء رائع!';
+            else if (percentage >= 80) message = '👍 جيد جدًا! أحسنت!';
+            else if (percentage >= 70) message = '💪 جيد! يمكنك التحسين أكثر';
+            else if (percentage >= 50) message = '📚 مقبول، تحتاج للمراجعة';
+            else message = '🎯 راجع المادة جيدًا';
+            
+            const finalScoreEl = document.getElementById('finalScore');
+            finalScoreEl.innerHTML = `
+                <h2>🏆 النتيجة النهائية 🏆</h2>
+                <div style="font-size: 2.5rem; margin: 20px 0;">${correctCount} / ${questions.length}</div>
+                <div style="font-size: 1.8rem; margin: 15px 0;">${percentage}%</div>
+                <div style="font-size: 1.3rem; margin-top: 20px;"><strong>${message}</strong></div>
+                <div style="margin-top: 20px; font-size: 0.9rem; opacity: 0.8;">
+                    ${answeredCount < questions.length ? '⚠️ ملاحظة: لم تجب على جميع الأسئلة' : ''}
+                </div>
+            `;
+            finalScoreEl.style.display = 'block';
+            
+            // تحديث شريط التقدم
+            document.getElementById('progressBar').style.width = '100%';
+            
+            finalScoreEl.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // تحديث الإحصائيات
+        function updateStats() {
+            const answeredCount = Object.keys(userAnswers).length;
+            let correctCount = 0;
+            
+            // حساب الإجابات الصحيحة فقط بعد التصحيح
+            if (isChecked) {
+                questions.forEach(q => {
+                    if (userAnswers[q.id] === q.correct) {
+                        correctCount++;
+                    }
+                });
+            }
+            
+            const wrongCount = isChecked ? answeredCount - correctCount : 0;
+            const percentage = answeredCount > 0 ? Math.round((correctCount / answeredCount) * 100) : 0;
+            
+            document.getElementById('correctCount').textContent = correctCount;
+            document.getElementById('wrongCount').textContent = wrongCount;
+            document.getElementById('answeredCount').textContent = answeredCount;
+            document.getElementById('totalCount').textContent = questions.length;
+            document.getElementById('percentage').textContent = `${percentage}%`;
+            
+            // تحديث شريط التقدم
+            const progress = (answeredCount / questions.length) * 100;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+        }
+
+        // إعادة الاختبار
+        function resetAll() {
+            if (confirm('هل تريد إعادة الاختبار؟ سيتم مسح جميع الإجابات.')) {
+                userAnswers = {};
+                isChecked = false;
+                initializeQuestions();
+                document.getElementById('finalScore').style.display = 'none';
+                document.getElementById('answerSummary').style.display = 'none';
+                document.getElementById('progressBar').style.width = '0%';
+            }
+        }
+
+        // تهيئة الصفحة عند التحميل
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeQuestions();
+        });
+    </script>
+</body>
+</html>
